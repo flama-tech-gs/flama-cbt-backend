@@ -55,9 +55,9 @@ app.use(
         "https://cdn.jsdelivr.net",   //allow worker importScripts
         "https://cdn.socket.io",
         "http://localhost:5000",
-        //"https://onrender.com",
+        "https://flama-cbt-backend.onrender.com"
       ],
-      imgSrc: ["'self'", "data:", "blob:", "http://localhost:5000", "https://fake-drug-verification.onrender.com"], // 👈 FIX: allow blob: images
+      imgSrc: ["'self'", "data:", "blob:", "https://flama-cbt-backend.onrender.com"], 
     },
   })
 );
@@ -107,7 +107,11 @@ app.use('/api', limiter);
 
 // CORS configuration
 const allowedOrigins = [
-  'null', //To allow frontend guys to work freely for now  
+  //'http://localhost:5000',
+  //'http://127.0.0.1:5500',
+  //'null',
+  'https://flama-cbt-backend.onrender.com',
+  'https://flama-tech-gs.github.io/flama-cbt-platform',
   ]; 
 
 app.use(cors({

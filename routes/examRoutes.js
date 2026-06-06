@@ -9,7 +9,9 @@ const { createExam, getExam,
 
 const { protect, staffProtect } = require('../middleware/authMiddleware');
 
-
+const {
+    studentAuth
+} = require('../middleware/studentAuth');
 
 /**
  * @swagger
@@ -362,8 +364,7 @@ router.get(
 // Get Exam By ID
 router.get(
 	'/:id',
-	protect,
-	staffProtect,
+	studentAuth,
 	getExam
 );
 

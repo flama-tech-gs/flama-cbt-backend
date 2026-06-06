@@ -4,11 +4,14 @@ const express = require('express');
 const router = express.Router();
 const {
 	createStudent, getAllStudents, getStudentById,
-	getStudentByAccess, updateStudent, deleteStudent
+	getStudentByAccess, updateStudent, deleteStudent, 
+	getMyProfile
 } = require('../controllers/studentController');
 const { protect, staffProtect } = require('../middleware/authMiddleware');
 
-
+const {
+    studentAuth
+} = require('../middleware/studentAuth');
 
 /**
  * @swagger
@@ -386,5 +389,9 @@ router.put( '/students/:identifier', protect, staffProtect, updateStudent );
 
 // Delete Student
 router.delete( '/students/:identifier', protect, staffProtect, deleteStudent );
+
+//Get Student Profile
+// Get Student By Access Code
+router.get( '/students/profile/me', studentAuth, getMyProfile );
 
 module.exports = router;

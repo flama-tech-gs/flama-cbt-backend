@@ -11,8 +11,16 @@ exports.createStudent = async (req, res) => {
 	try{
 
 		const {
-			surname, firstname, email,
-			class: studentClass, department
+			surname,
+			firstname,
+			email,
+			class: studentClass,
+			department,
+			age,
+			admissionYear,
+			parentPhoneNumber,
+			currentTerm,
+			address
 		} = req.body;
 
 		if ( !surname || !firstname || !studentClass )
@@ -42,7 +50,12 @@ exports.createStudent = async (req, res) => {
 			access_code,
 			password: defaultPassword,
 			class: studentClass,
-			department
+			department,
+			age,
+			admissionYear,
+			parentPhoneNumber,
+			currentTerm,
+			address
 		});
 
 		//Invalidate redis cache
@@ -60,6 +73,11 @@ exports.createStudent = async (req, res) => {
 			email: student.email,
 			class: student.class,
 			department: student.department,
+			age: student.age,
+			admissionYear: student.admissionYear,
+			parentPhoneNumber: student.parentPhoneNumber,
+			currentTerm: student.currentTerm,
+			address: student.address,
 			access_code: student.access_code,
 			default_password: defaultPassword
 		})
@@ -217,6 +235,8 @@ exports.getStudentByAccess = async (req, res) => {
 	}
 };
 
+
+
 //PUT  Update student record
 // Update Student
 exports.updateStudent = async (req, res) => {
@@ -241,7 +261,17 @@ exports.updateStudent = async (req, res) => {
 			return res.status(404).json({ message: 'Student not found' });
 		
 
-		const { surname, firstname, email, class: studentClass, department } = req.body;
+		const { surname,
+				firstname,
+				email,
+				class: studentClass,
+				department,
+				age,
+				admissionYear,
+				parentPhoneNumber,
+				currentTerm,
+				address 
+			} = req.body;
 
 		// Update fields
 		if (surname)
@@ -254,6 +284,19 @@ exports.updateStudent = async (req, res) => {
 			student.class = studentClass;
 		if (department)
 			student.department = department;
+		if (age !== undefined)
+			student.age = age;
+		if (admissionYear !== undefined)
+			student.admissionYear = admissionYear;
+
+		if (parentPhoneNumber)
+			student.parentPhoneNumber = parentPhoneNumber;
+
+		if (currentTerm)
+			student.currentTerm = currentTerm;
+
+		if (address)
+			student.address = address;
 
 		await student.save();
 
@@ -322,4 +365,27 @@ exports.deleteStudent = async (req, res) => {
 	} catch (err) {
 		res.status(500).json({ message: 'Internal Server Error'});
 	}
+};
+
+
+
+//GET Get student profile
+exports.getMyProfile = async (req, res) => {
+  try {
+    const student = await Student.findById(req.user._id)
+      .select('-password');
+
+    if (!student) {
+      return res.status(404).json({
+        message: 'Student not found'
+      });
+    }
+
+    res.json(student);
+
+  } catch (err) {
+    res.status(500).json({
+      message: 'Internal Server Error'
+    });
+  }
 };

@@ -5,12 +5,15 @@ const express = require('express');
 const router = express.Router();
 
 const { addQuestion, getQuestion,
-	getAllQuestions, updateQuestion, deleteQuestion
+	getAllQuestions, updateQuestion, deleteQuestion,
+	getQuestionsByExam
 } = require('../controllers/questionController');
 
 const { protect, staffProtect } = require('../middleware/authMiddleware');
 
-
+const {
+    studentAuth
+} = require('../middleware/studentAuth');
 
 
 
@@ -351,6 +354,12 @@ router.get(
 	protect,
 	staffProtect,
 	getAllQuestions
+);
+
+router.get(
+  '/exam/:examId',
+  studentAuth,
+  getQuestionsByExam
 );
 
 // Get Question By ID

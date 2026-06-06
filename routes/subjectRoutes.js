@@ -9,7 +9,9 @@ const {
 
 const { protect, staffProtect } = require('../middleware/authMiddleware');
 
-
+const {
+    studentAuth
+} = require('../middleware/studentAuth');
 
 
 /**
@@ -446,6 +448,10 @@ router.post('/', protect, staffProtect, createSubject );
 // Get All Subjects
 router.get('/', protect, staffProtect, getAllSubjects );
 
+
+// Get Subjects Related To Student
+router.get( '/student/:studentIdentifier', studentAuth, getStudentSubjects );
+
 // Get Subject By ID or Code
 router.get('/:identifier', protect, staffProtect, getSubject );
 
@@ -457,8 +463,5 @@ router.delete('/:identifier', protect, staffProtect, deleteSubject );
 
 // Add Student To Subject
 router.post( '/enroll/student', protect, staffProtect, addStudentToSubject );
-
-// Get Subjects Related To Student
-router.get( '/student/:studentIdentifier', protect, staffProtect, getStudentSubjects );
 
 module.exports = router;

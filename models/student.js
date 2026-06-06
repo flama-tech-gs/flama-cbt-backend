@@ -45,6 +45,29 @@ const studentSchema = new mongoose.Schema(
 			type: String
 		},
 
+		age: {
+			type: Number
+		},
+
+		admissionYear: {
+			type: Number
+		},
+
+		parentPhoneNumber: {
+			type: String,
+			trim: true
+		},
+
+		currentTerm: {
+			type: String,
+			enum: ['First Term', 'Second Term', 'Third Term']
+		},
+
+		address: {
+			type: String,
+			trim: true
+		},
+
 		isActive: {
 			type: Boolean,
 			default: true
@@ -57,10 +80,10 @@ const studentSchema = new mongoose.Schema(
 );
 
 // Hash Password
-studentSchema.pre('save', async function (next) {
+studentSchema.pre('save', async function () {
 
 	if (!this.isModified('password')) {
-		return next();
+		return;
 	}
 	try {
 		const salt = await bcrypt.genSalt(10);
@@ -68,9 +91,9 @@ studentSchema.pre('save', async function (next) {
 			this.password,
 			salt
 		);
-		next();
+		
 	} catch (err) {
-		next(err);
+		throw err;
 	}
 });
 

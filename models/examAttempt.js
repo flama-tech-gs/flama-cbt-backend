@@ -42,6 +42,11 @@ const examAttemptSchema = new mongoose.Schema(
 			}
 		],
 
+		 remainingTime: {
+	        type: Number,
+	        default: 0
+	    },
+    
 		startedAt: {
 			type: Date,
 			default: Date.now

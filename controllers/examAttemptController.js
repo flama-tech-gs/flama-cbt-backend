@@ -36,20 +36,43 @@ exports.startExam = async (req, res) => {
 		if (!exam)
 			return res.status(404).json({ message: 'Exam not found' });
 
-		// Check if already submitted
+		// Check if already attempted
 		const existingAttempt = await ExamAttempt.findOne({
 			exam: examId,
 			student: req.user._id,
-			isSubmitted: true
+			isSubmitted: false
 		});
 
 		if (existingAttempt)
-			return res.status(400).json({ message: 'You already submitted this exam' });
+			return res.status(400).json({ message: 'You already have an active attempt' });
+
+		//validate schedule exam
+		const now = new Date();
+
+		if (!exam.isActive) 
+		    return res.status(400).json({
+		        message: 'Exam is not active'
+		    });
+		
+
+		if (exam.startDate && now < exam.startDate) 
+		    return res.status(400).json({
+		        message: 'Exam has not started'
+		    });
+		
+
+		if (exam.endDate && now > exam.endDate) 
+		    return res.status(400).json({
+		        message: 'Exam has ended'
+		    });
+		
+
 
 		// Create attempt
 		const attempt = await ExamAttempt.create({
 			student: req.user._id,
-			exam: examId
+			exam: examId,
+			remainingTime: exam.duration * 60
 		});
 
 		//REDIS INVALIDATION
@@ -105,7 +128,10 @@ exports.submitExam = async (req, res) => {
 		const questionIds = answers.map( (ans) => ans.questionId );
 
 		// Fetch all questions once
-		const questions = await Question.find({ _id: { $in: questionIds } });
+		const questions = await Question.find({ 
+			_id: { $in: questionIds },
+			exam: attempt.exam
+		});
 
 
 		// Create question map for fast lookup
@@ -224,13 +250,13 @@ exports.getAttempt = async (req, res) => {
 			});
 		}
 
-		const attempt = await ExamAttempt.findById({ _id: req.params.id,
+		const attempt = await ExamAttempt.findOne({ _id: req.params.id,
 												student: req.user._id })
 												.populate('exam')
 												.populate('student', 'surname firstname access_code')
 												.populate({
 													path: 'answers.question',
-													select: 'question options correctAnswer marks'
+													select: 'question options marks'
 												});
 
 		if (!attempt)
@@ -334,4 +360,76 @@ exports.updateAttemptAnswer = async (req, res) => {
 	} catch (err) {
 		res.status(500).json({ message: 'Internal Server Error'});
 	}
+};
+
+
+
+//Get question attempt i related to exam
+exports.getActiveAttempt = async (req, res) => {
+
+    try {
+
+        const { examId } = req.params;
+
+        const attempt =
+            await ExamAttempt.findOne({
+                exam: examId,
+                student: req.user._id,
+                isSubmitted: false
+            });
+
+        if (!attempt) {
+            return res.status(404).json({
+                message: "No active attempt"
+            });
+        }
+
+        res.json({
+            attempt
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+};
+
+
+// save time 
+exports.saveRemainingTime = async (req, res) => {
+    try {
+
+        const {
+            attemptId,
+            remainingTime
+        } = req.body;
+
+        const attempt =
+		  await ExamAttempt.findOne({
+		    _id: attemptId,
+		    student: req.user._id
+		  });
+
+        if (!attempt)
+            return res.status(404).json({
+                message: "Attempt not found"
+            });
+
+        attempt.remainingTime =
+            remainingTime;
+
+        await attempt.save();
+
+        res.json({
+            message: "Time saved"
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: "Internal Server Error"
+        });
+
+    }
 };

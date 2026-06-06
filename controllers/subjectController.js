@@ -231,7 +231,8 @@ exports.updateSubject = async (req, res) => {
 				return res.status(404).json({ message: 'Student not found'});
 			
 			//Update student
-			subject.student = studentExists._id;
+			//subject.student = studentExists._id;
+			subject.students.push(studentExists._id);
 		}
 
 		await subject.save();

@@ -14,9 +14,19 @@ exports.addQuestion = async (req, res) => {
 			options,correctAnswer, marks
 		} = req.body;
 
-		if ( !examId || !question || !options || !correctAnswer )
+		if ( !examId || !question  || !correctAnswer )
 			return res.status(400).json({ message: 'All fields are required' });
 
+		if (
+		    !options || !options.a ||
+		    !options.b || !options.c ||
+		    !options.d || !options.e
+		) {
+		    return res.status(400).json({
+		        message: 'Options a, b, c, d and e are required'
+		    });
+		}
+		
 		// Check Exam
 		const exam = await Exam.findById(examId);
 
@@ -210,4 +220,30 @@ exports.deleteQuestion = async (req, res) => {
 	} catch (err) {
 		res.status(500).json({ message: err.message || 'Internal server error' });
 	}
+};
+
+
+
+
+// Get Questions related to a Exam
+exports.getQuestionsByExam = async (req, res) => {
+  try {
+    const { examId } = req.params;
+
+    const questions = await Question.find({
+      exam: examId
+    })
+      .select("-correctAnswer")
+      .sort({ createdAt: 1 });
+
+    res.json({
+      totalQuestions: questions.length,
+      questions
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Internal Server Error"
+    });
+  }
 };

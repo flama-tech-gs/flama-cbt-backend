@@ -15,13 +15,17 @@ const questionSchema = new mongoose.Schema({
 		required: true
 	},
 
-	options: [{
-		type: String,
-		required: true
-	}],
+	options: {
+	    a: { type: String, required: true },
+	    b: { type: String, required: true },
+	    c: { type: String, required: true },
+	    d: { type: String, required: true },
+	    e: { type: String, required: true },
+	},
 
 	correctAnswer: {
 		type: String,
+		enum: ['a', 'b', 'c', 'd', 'e'],
 		required: true
 	},
 

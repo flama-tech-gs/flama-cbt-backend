@@ -61,3 +61,16 @@ exports.staffProtect  = (req, res, next) => {
     	res.status(403).json({ message: "Not authorized" });
   	}
 };
+
+
+
+//Student Only
+exports.studentProtect = (req, res, next) => {
+	const allowedRoles = [ 'student', 'admin' ];
+
+  	if ( allowedRoles.includes(req.user.role)) {
+    	next();
+  	} else {
+    	res.status(403).json({ message: "Students only" });
+  	}
+};

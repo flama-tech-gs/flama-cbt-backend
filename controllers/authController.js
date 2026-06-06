@@ -1,12 +1,14 @@
 //controllers/authController.js
 
 const User = require('../models/User');
+const Student = require('../models/student');
 const createToken = require('../utils/jwt');
 
 
  //POST    Register Teacher
 exports.register = async (req, res) => {
 	try {
+		
 		const { surname, firstname, email, password } = req.body;
 		
 		if (!surname || !firstname || !email || !password)
@@ -47,7 +49,7 @@ exports.register = async (req, res) => {
 exports.acceptTeacher = async (req, res) => {
 	try {
 
-		const { email } = req.query;
+		const { email, role } = req.body;
 
 		if (!email)
 			return res.status(400).json({ message: 'Email is required'});
@@ -55,8 +57,6 @@ exports.acceptTeacher = async (req, res) => {
 		//Admin/principal are allowed
 		if (req.user.role !== 'admin' && req.user.role !== 'principal')
 			return res.status(400).json({ message: 'You are not authorize' });
-
-		const { role } = req.body;
 
 		if(!role)
 			return res.status(400).json({ message: 'Role id required' });
@@ -86,7 +86,7 @@ exports.acceptTeacher = async (req, res) => {
 		});
 
 	} catch (err) {
-		res.status(500).json({ message: 'Internal Server Error' });
+		res.status(500).json({ message: 'Internal Server Error'});
 	}
 };
 

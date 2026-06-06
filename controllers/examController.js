@@ -9,13 +9,20 @@ const redisClient = require('../config/redis');
 exports.createExam = async (req, res) => {
 	try {
 
-		const { title, subjectIdentifier, instructions,
-			duration, startDate, endDate
+		const { title,
+				subjectIdentifier,
+				instructions,
+				duration,
+				startDate,
+				endDate,
+				term,
+				session
 		 } = req.body;
 
 		if (!title || !subjectIdentifier) 
 			return res.status(400).json({ message: 'Title and subject are required' });
 
+		
 		// Check Subject
 		let subjectExists;
 
@@ -31,6 +38,16 @@ exports.createExam = async (req, res) => {
 	
 			return res.status(404).json({ message: 'Subject not found' });
 		
+		//Validate exam 
+		const existingExam = await Exam.findOne({
+    		title,
+    		subject: subjectExists._id
+    	});
+
+    	if (existingExam) 
+    		return res.status(400).json({ message: 'Exam already exists' });
+
+
 		//Create Exam
 		const exam = await Exam.create({
 			title,
@@ -39,6 +56,8 @@ exports.createExam = async (req, res) => {
 			duration: duration || 60,
 			startDate,
 			endDate,
+			term,
+			session,
 			createdBy: req.user._id
 		});
 	
@@ -57,7 +76,7 @@ exports.createExam = async (req, res) => {
 		});
 
 	} catch (err) {
-		res.status(500).json({ message: 'Internal Server Error'});
+		res.status(500).json({ message: err.message });
 	}
 };
 
@@ -183,8 +202,21 @@ exports.updateExam = async (req, res) => {
 		if(!exam)
 			return res.status(404).json({ message: 'Exam not found'});
 
-		const { title, subject, instructions,
-			duration, startDate, endDate 
+		//Teacher that creat exam will be the one to update it
+		if ( req.user.role === 'teacher' &&
+    		exam.createdBy.toString() !== req.user._id.toString() ) 
+    		
+    		return res.status(403).json({ message: 'Unauthorized' });
+
+
+		const { title,
+				subject,
+				instructions,
+				duration,
+				startDate,
+				endDate,
+				term,
+				session
 		} = req.body;
 
 		//Update
@@ -198,6 +230,10 @@ exports.updateExam = async (req, res) => {
 			exam.startDate = startDate;
 		if(endDate)
 			exam.endDate = endDate;
+		if (term)
+			exam.term = term;
+		if (session)
+			exam.session = session;
 		if(subject) {
 			let subjectExists;
 

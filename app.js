@@ -107,17 +107,19 @@ app.use('/api', limiter);
 
 // CORS configuration
 const allowedOrigins = [
-  'http://localhost:5000',
   'null', //To allow frontend guys to work freely for now  
   ]; 
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
+
+    console.log("Blocked CORS origin:", origin);
+    return callback(null, false); // 🔥 DO NOT throw error
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

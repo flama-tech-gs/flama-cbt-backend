@@ -9,15 +9,19 @@ const {
 	submitExam,
 	getStudentAttempts,
 	getAttempt,
-	updateAttemptAnswer
+	updateAttemptAnswer,
+	getActiveAttempt,
+	saveRemainingTime
 } = require('../controllers/examAttemptController');
 
 const {
-	protect
+	studentProtect
 } = require('../middleware/authMiddleware');
 
 
-
+const {
+    studentAuth
+} = require('../middleware/studentAuth');
 
 /**
  * @swagger
@@ -312,36 +316,56 @@ const {
 // Start Exam
 router.post(
 	'/start',
-	protect,
+	studentAuth,
+	studentProtect,
 	startExam
 );
 
 // Submit Exam
 router.post(
 	'/submit',
-	protect,
+	studentAuth,
+	studentProtect,
 	submitExam
 );
 
 // Get Student Attempts
 router.get(
 	'/my-attempts',
-	protect,
+	studentAuth,
+	studentProtect,
 	getStudentAttempts
+);
+
+//Get attempt related to exam
+router.get(
+    '/active/:examId',
+    studentAuth,
+    studentProtect,
+    getActiveAttempt
 );
 
 // Get Single Attempt
 router.get(
 	'/:id',
-	protect,
+	studentAuth,
+	studentProtect,
 	getAttempt
 );
 
 // Update Answer
 router.put(
 	'/update-answer',
-	protect,
+	studentAuth,
+	studentProtect,
 	updateAttemptAnswer
+);
+
+router.put(
+    '/save-time',
+    studentAuth,
+    studentProtect,
+    saveRemainingTime
 );
 
 module.exports = router;

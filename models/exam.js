@@ -36,6 +36,15 @@ const examSchema = new mongoose.Schema({
 		default: 100
 	},
 
+	term: {
+		type: String,
+		enum: ['First Term', 'Second Term', 'Third Term']
+	},
+
+	session: {
+		type: String
+	},
+
 	isActive: {
 		type: Boolean,
 		default: false

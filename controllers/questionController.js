@@ -63,7 +63,11 @@ exports.addQuestion = async (req, res) => {
 		});
 
 	} catch (err) {
-		  res.status(500).json({ message: 'Internal Server Error'});
+		  	console.error("CREATE QUESTION ERROR:", err);
+    res.status(500).json({
+        message: err.message,
+        stack: err.stack
+    });
 	}
 };
 

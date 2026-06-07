@@ -76,7 +76,11 @@ exports.createExam = async (req, res) => {
 		});
 
 	} catch (err) {
-		res.status(500).json({ message: err.message });
+			console.error("CREATE EXAM ERROR:", err);
+    res.status(500).json({
+        message: err.message,
+        stack: err.stack
+    });
 	}
 };
 

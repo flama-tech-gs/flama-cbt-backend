@@ -63,7 +63,11 @@ exports.createSubject = async (req, res) => {
 		});
 
 	} catch (err) {
-		res.status(500).json({ message: 'Internal Server Error'});
+			console.error("CREATE SUBJECT ERROR:", err);
+    res.status(500).json({
+        message: err.message,
+        stack: err.stack
+    });
 	}
 };
 

@@ -110,6 +110,7 @@ const allowedOrigins = [
   //'http://localhost:5000',
   //'http://127.0.0.1:5500',
   //'null',
+  'https://flama-tech-gs.github.io',
   'https://flama-cbt-backend.onrender.com',
   'https://flama-tech-gs.github.io/flama-cbt-platform',
   ]; 

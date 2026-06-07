@@ -117,7 +117,7 @@ exports.login = async ( req, res ) => {
 			const isPassword = await user.comparePassword(password);
 
 			if (!isPassword)
-				return res.status(400).jsdon({ message: 'Invalid Credentials' });
+				return res.status(400).json({ message: 'Invalid Credentials' });
 
 			return res.json({
 				_id: user._id,
@@ -153,6 +153,11 @@ exports.login = async ( req, res ) => {
 		});
 
 	} catch (err) {
-		res.status(500).json ({ message: 'Internal Server Error' });
+		console.error("LOGIN ERROR:", err);
+    res.status(500).json({
+        message: err.message
+    });
 	}
 };
+
+

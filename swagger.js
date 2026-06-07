@@ -18,7 +18,7 @@ const options = {
         description: 'Local server',
       },
       {
-        url: 'https://swer.com', // for deployment 
+        url: 'https://flama-cbt-backend.onrender.com', // for deployment 
         description: 'Production server',
       },
     ],

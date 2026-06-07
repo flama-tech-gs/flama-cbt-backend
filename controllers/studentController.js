@@ -83,7 +83,11 @@ exports.createStudent = async (req, res) => {
 		})
 
 	} catch (err) {
-		res.status(500).json({ message: 'Internal Server Error'});
+		console.error("CREATE STUDENT ERROR:", err);
+    res.status(500).json({
+        message: err.message,
+        stack: err.stack
+    });
 	}
 };
 
